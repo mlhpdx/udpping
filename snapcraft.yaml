@@ -1,0 +1,67 @@
+name: udpping
+adopt-info: version
+summary: A `gping`-style latency grapher that probes over plain UDP echo (RFC 862) instead of ICMP.
+description: |
+How it works
+  - Every `--interval` ms, a packet containing a fresh GUID (16 bytes) is
+    sent to `<host>:<port>`.
+  - When a reply arrives, its 16-byte payload is matched back to the GUID
+    that was sent, and the elapsed time is the round-trip time.
+  - A packet with no reply within `--timeout` ms counts as dropped.
+  - Time is divided into `--display-interval` ms **ticks**. Every packet belongs to the tick
+    it was **sent** in (not the tick its reply lands in), so a tick's
+    column keeps updating with new data even after later ticks have
+    already appeared on screen - a late reply, or a drop, can still land
+    a mark on a column that's scrolled a few positions to the left.
+
+  > **Note:** the target must actually run a UDP echo service that sends
+  > back exactly what it received. Most servers on the internet do not run
+  > this; you'll typically point this at your own echo listener (many
+  > simple ones exist in a few lines of Python/Go/etc.), or a router/appliance
+  > that offers RFC 862 echo.
+source-code: https://github.com/mlhpdx/udpping
+website: https://github.com/mlhpdx/udpping
+license: MIT
+environment:
+  DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: 1
+
+grade: stable # or 'devel' for development versions
+confinement: strict # or 'devmode' for development
+
+base: core22 # Ubuntu 22.04 LTS base
+
+architectures:
+  - build-on: [amd64]
+    build-for: [amd64]
+  - build-on: [amd64, arm64]
+    build-for: [armhf]
+  - build-on: [amd64, arm64]
+    build-for: [arm64]
+
+apps:
+  udpping:
+    command: bin/udpping
+    plugs:
+      - network
+      - network-bind
+      - home
+
+parts:
+  version:
+    plugin: nil
+    override-pull: |
+      set -ex
+      if [ -n "${VERSION:-}" ]; then
+        craftctl set version="$VERSION"
+      else
+        craftctl set version="$(cd $SNAPCRAFT_PROJECT_DIR && git describe --tags --always)"
+      fi
+
+  udpping:
+    after: [version]
+    plugin: nil
+    override-build: |
+      set -ex
+      mkdir -p "$CRAFT_PART_INSTALL/bin"
+      cp "$CRAFT_PROJECT_DIR/snap/local/udpping" "$CRAFT_PART_INSTALL/bin/udpping"
+      chmod +x "$CRAFT_PART_INSTALL/bin/udpping"

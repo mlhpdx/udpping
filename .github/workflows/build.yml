@@ -1,0 +1,28 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - never_ever
+
+jobs:
+  build:
+
+    runs-on: ubuntu-22.04
+
+    steps:
+    - uses: actions/checkout@v6
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: 10.0.x
+    - name: Publish for Linux
+      run: dotnet publish udpping.csproj -o ./udpping-${{ github.run_id }}-linux-x64 -c Release -r linux-x64
+    - name: Archive Zip
+      uses: actions/upload-artifact@v6
+      with:
+        name: udpping-${{ github.run_id }}-linux-x64.zip
+        path: udpping-${{ github.run_id }}-linux-x64
+  

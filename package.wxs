@@ -1,0 +1,82 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package
+    Name="udpping"
+    Version="$(var.Version)"
+    Manufacturer="mlhpdx"
+    UpgradeCode="{192fb35c-e77a-4244-ab13-e0f090ad95a1}">
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <!-- UI Configuration -->
+    <UI>
+      <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+      <Property Id="ARPCONTACT" Value="https://github.com/mlhpdx" />
+      <Property Id="ARPURLINFOABOUT" Value="https://github.com/mlhpdx/udpping" />
+      <Property Id="ARPNOREPAIR" Value="yes" />
+    </UI>
+
+    <Feature Id="Main">
+      <ComponentGroupRef Id="ProductComponents" />
+      <ComponentRef Id="ApplicationShortcut" />
+      <ComponentRef Id="PathComponent" />
+      <ComponentRef Id="FirewallException" />
+    </Feature>
+
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="INSTALLFOLDER" Name="udpping" />
+    </StandardDirectory>
+
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Directory Id="ApplicationProgramsFolder" Name="udpping" />
+    </StandardDirectory>
+
+    <StandardDirectory Id="DesktopFolder" />
+
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+      <Component>
+        <File Source="$(var.PublishDir)\udpping.exe" KeyPath="yes">
+          <Shortcut Id="DesktopShortcut"
+            Directory="DesktopFolder"
+            Name="udpping"
+            WorkingDirectory="INSTALLFOLDER"
+            Advertise="yes" />
+        </File>
+      </Component>
+    </ComponentGroup>
+
+    <Component Id="PathComponent" Directory="INSTALLFOLDER" Guid="{4e1a0feb-504c-424a-9858-7ff3917c66df}">
+      <Environment Id="PATH" Name="PATH" Value="[INSTALLFOLDER]" Permanent="no" Part="last"
+        Action="set" System="yes" />
+    </Component>
+
+    <Component Id="ApplicationShortcut" Directory="ApplicationProgramsFolder">
+      <Shortcut Id="ApplicationStartMenuShortcut"
+        Name="udpping"
+        Target="[INSTALLFOLDER]udpping.exe"
+        WorkingDirectory="INSTALLFOLDER" />
+      <Shortcut Id="UninstallProduct"
+        Name="Uninstall udpping"
+        Target="[System64Folder]msiexec.exe"
+        Arguments="/x [ProductCode]" />
+      <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall" />
+      <RegistryValue Root="HKCU"
+        Key="Software\mlhpdx\udpping"
+        Name="installed"
+        Type="integer"
+        Value="1"
+        KeyPath="yes" />
+    </Component>
+
+    <!-- Add app to Windows Firewall -->
+    <Component Id="FirewallException" Directory="INSTALLFOLDER" Guid="{c8477e56-158c-4434-8a86-ecabb6cca049}">
+      <Fire:FirewallException
+        xmlns:Fire="http://wixtoolset.org/schemas/v4/wxs/firewall"
+        Id="FWX1"
+        Name="udpping"
+        Program="[#udpping.exe]"
+        Scope="any" />
+    </Component>
+
+  </Package>
+</Wix>
