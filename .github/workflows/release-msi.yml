@@ -20,7 +20,7 @@ jobs:
       with:
         dotnet-version: 10.0.x
     - name: Publish for OS
-      run: dotnet publish udpping.csproj -o ./publish/win-${{ matrix.rid }} -c Release -r win-${{ matrix.rid }} /p:Version=${{ github.ref_name }}
+      run: dotnet publish src/udpping.csproj -o ./publish/win-${{ matrix.rid }} -c Release -r win-${{ matrix.rid }} /p:Version=${{ github.ref_name }}
     - name: Zip it Up
       run: tar -a -c -f udpping-${{ github.ref_name }}-win-${{ matrix.rid }}.zip -C ./publish/win-${{ matrix.rid }} .
     - name: Upload ZIP to Release

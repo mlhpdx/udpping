@@ -46,7 +46,7 @@ jobs:
         run: sudo ln -sf "${{ matrix.objcopy_path }}" /usr/local/bin/objcopy
 
       - name: Publish for runtime identifier
-        run: dotnet publish udpping.csproj -o "./slb-${{ matrix.rid }}" -c Release -r "${{ matrix.rid }}" /p:Version="${{ github.ref_name }}" ${{ matrix.publish_args }}
+        run: dotnet publish src/udpping.csproj -o "./slb-${{ matrix.rid }}" -c Release -r "${{ matrix.rid }}" /p:Version="${{ github.ref_name }}" ${{ matrix.publish_args }}
 
       - name: Zip runtime artifacts
         run: zip -r -j "udpping-${{ github.ref_name }}-${{ matrix.rid }}.zip" "./slb-${{ matrix.rid }}"
