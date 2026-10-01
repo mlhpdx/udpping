@@ -24,6 +24,41 @@ instead of ICMP.
 > simple ones exist in a few lines of Python/Go/etc.), or a router/appliance
 > that offers RFC 862 echo.
 
+## Install
+
+### Linux (snap or direct download)
+
+```
+snap install udpping
+```
+
+Or download the self-contained native binary for your architecture
+(`linux-x64` / `linux-arm` / `linux-arm64`) from the
+[releases page](https://github.com/mlhpdx/udpping/releases), unzip it,
+and mark it executable (`chmod +x udpping`). The direct-download binaries
+are Native AOT builds and need no .NET runtime.
+
+### .NET global tool (Linux x64/arm/arm64, Windows)
+
+Requires the [.NET runtime](https://dotnet.microsoft.com/download) (10.0+)
+to be installed. One package works on every supported platform:
+
+```
+dotnet tool install --global udpping
+```
+
+Update to the latest release with `dotnet tool update --global udpping`,
+and remove it with `dotnet tool uninstall --global udpping`.
+
+### Windows (winget or MSI)
+
+```
+winget install mlhpdx.udpping
+```
+
+Or download the `.msi` for your architecture (`win-x64` / `win-arm64`)
+from the [releases page](https://github.com/mlhpdx/udpping/releases).
+
 ## Usage
 
 ```
