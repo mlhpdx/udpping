@@ -3,7 +3,7 @@
 A `gping`-style latency grapher that probes over plain UDP echo (RFC 862)
 instead of ICMP.
 
-![Screenshot](udpping.png)
+![Screenshot](udpping.gif)
 
 ## How it works
 
