@@ -9,18 +9,46 @@
     <AssemblyName>udpping</AssemblyName>
     <InvariantGlobalization>true</InvariantGlobalization>
 
-    <!-- Native AOT -->
+    <Authors>Lee Harding</Authors>
+    <Product>udpping</Product>
+    <Description>A `gping`-style latency grapher that probes over plain UDP echo (RFC 862) instead of ICMP.</Description>
+  </PropertyGroup>
+
+  <!--
+    Native AOT path (default): produces the self-contained native binaries
+    shipped as direct downloads, MSI, and snap. Disabled when packing the
+    .NET global tool, which must be a framework-dependent managed package.
+  -->
+  <PropertyGroup Condition="'$(PackAsTool)' != 'true'">
     <PublishAot>true</PublishAot>
     <SelfContained>true</SelfContained>
     <EventSourceSupport>false</EventSourceSupport>
     <UseSystemResourceKeys>true</UseSystemResourceKeys>
     <HttpActivityPropagationSupport>false</HttpActivityPropagationSupport>
     <StackTraceSupport>false</StackTraceSupport>
-
-    <Authors>Lee Harding</Authors>
-    <Product>udpping</Product>
-    <Description>A `gping`-style latency grapher that probes over plain UDP echo (RFC 862) instead of ICMP.</Description>
   </PropertyGroup>
+
+  <!--
+    .NET global tool path: activated with `dotnet pack -p:PackAsTool=true`.
+    One framework-dependent package runs on linux-x64, linux-arm,
+    linux-arm64, and Windows wherever the .NET runtime is present.
+  -->
+  <PropertyGroup Condition="'$(PackAsTool)' == 'true'">
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>udpping</ToolCommandName>
+    <PackageId>udpping</PackageId>
+    <PackageDescription>A `gping`-style latency grapher that probes over plain UDP echo (RFC 862) instead of ICMP.</PackageDescription>
+    <PackageTags>udp;ping;latency;network;cli;gping;rfc862</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/mlhpdx/udpping</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/mlhpdx/udpping</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(PackAsTool)' == 'true'">
+    <None Include="../README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Spectre.Console" Version="0.54.0" />

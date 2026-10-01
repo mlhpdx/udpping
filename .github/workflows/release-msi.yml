@@ -19,12 +19,6 @@ jobs:
       uses: actions/setup-dotnet@v5
       with:
         dotnet-version: 10.0.x
-    - name: Get the Tagged Version
-      id: get_version
-      shell: bash
-      run: |
-        echo "VERSION=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
-        echo "RELEASE_ID=$(jq --raw-output '.release.id' $GITHUB_EVENT_PATH)" >> "$GITHUB_OUTPUT"
     - name: Publish for OS
       run: dotnet publish udpping.csproj -o ./publish/win-${{ matrix.rid }} -c Release -r win-${{ matrix.rid }} /p:Version=${{ github.ref_name }}
     - name: Zip it Up
@@ -32,16 +26,10 @@ jobs:
     - name: Upload ZIP to Release
       shell: bash
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         VERSION: ${{ github.ref_name }}
         FILE: udpping-${{ github.ref_name }}-win-${{ matrix.rid }}.zip
-        URL: https://uploads.github.com/repos/${{ github.repository }}/releases/${{ steps.get_version.outputs.RELEASE_ID }}/assets?name=udpping-${{ github.ref_name }}-win-${{ matrix.rid }}.zip
-      run: |
-        echo $VERSION
-        echo $URL
-        AUTH="Authorization: token $GITHUB_TOKEN"
-        echo $AUTH
-        curl -sSL -XPOST -H "$AUTH" --upload-file "$FILE" --header "Content-Type:application/octet-stream" --write-out "%{http_code}" --output $(mktemp) "$URL"
+      run: gh release upload "$VERSION" "$FILE" --clobber
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v3
     - name: Install WiX
@@ -51,19 +39,13 @@ jobs:
         wix extension add WixToolset.Firewall.wixext/4.0.6
     - name: Build WiX on Windows
       run: wix build package.wxs -arch ${{ matrix.rid }} -define Version=${{ github.ref_name }} -define PublishDir=./publish/win-${{ matrix.rid }} -o udpping-${{ github.ref_name }}-win-${{ matrix.rid }}.msi -ext WixToolset.UI.wixext -ext WixToolset.Firewall.wixext
-    - name: Upload MSI to Releaase
+    - name: Upload MSI to Release
       shell: bash
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         VERSION: ${{ github.ref_name }}
         FILE: udpping-${{ github.ref_name }}-win-${{ matrix.rid }}.msi
-        URL: https://uploads.github.com/repos/${{ github.repository }}/releases/${{ steps.get_version.outputs.RELEASE_ID }}/assets?name=udpping-${{ github.ref_name }}-win-${{ matrix.rid }}.msi
-      run: |
-        echo $VERSION
-        echo $URL
-        AUTH="Authorization: token $GITHUB_TOKEN"
-        echo $AUTH
-        curl -sSL -XPOST -H "$AUTH" --upload-file "$FILE" --header "Content-Type:application/octet-stream" --write-out "%{http_code}" --output $(mktemp) "$URL"
+      run: gh release upload "$VERSION" "$FILE" --clobber
   winget:
     permissions:
       pull-requests: write
