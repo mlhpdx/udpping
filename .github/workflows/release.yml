@@ -6,6 +6,8 @@ on:
 
 jobs:
   publish:
+    permissions:
+      contents: write  # required to upload assets to the GitHub release
     strategy:
       fail-fast: false
       matrix:
