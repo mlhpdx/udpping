@@ -1,6 +1,6 @@
 name: udpping
 adopt-info: version
-summary: A `gping`-style latency grapher that probes over plain UDP echo (RFC 862) instead of ICMP.
+summary: A `gping`-style latency grapher over plain UDP echo (RFC 862) instead of ICMP.
 description: |
   How it works
 
