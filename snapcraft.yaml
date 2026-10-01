@@ -2,7 +2,8 @@ name: udpping
 adopt-info: version
 summary: A `gping`-style latency grapher that probes over plain UDP echo (RFC 862) instead of ICMP.
 description: |
-How it works
+  How it works
+
   - Every `--interval` ms, a packet containing a fresh GUID (16 bytes) is
     sent to `<host>:<port>`.
   - When a reply arrives, its 16-byte payload is matched back to the GUID
